@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sadaf Nasir">
+<meta name="dcterms.date" content="2025-03-27">
+
+<title>Predicting Survival of Patients with Heart Failure with Machine Learning Methods</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="711_reproduction_manuscript_files/libs/clipboard/clipboard.min.js"></script>
+<script src="711_reproduction_manuscript_files/libs/quarto-html/quarto.js"></script>
+<script src="711_reproduction_manuscript_files/libs/quarto-html/popper.min.js"></script>
+<script src="711_reproduction_manuscript_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="711_reproduction_manuscript_files/libs/quarto-html/anchor.min.js"></script>
+<link href="711_reproduction_manuscript_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="711_reproduction_manuscript_files/libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="711_reproduction_manuscript_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="711_reproduction_manuscript_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="711_reproduction_manuscript_files/libs/bootstrap/bootstrap-973236bd072d72a04ee9cd82dcc9cb29.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of Contents</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract"><span class="header-section-number">1</span> Abstract</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction"><span class="header-section-number">2</span> Introduction</a>
+  <ul class="collapse">
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset"><span class="header-section-number">2.1</span> Dataset</a></li>
+  </ul></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">3</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#participants" id="toc-participants" class="nav-link" data-scroll-target="#participants"><span class="header-section-number">3.1</span> Participants</a></li>
+  <li><a href="#descriptive-statistics" id="toc-descriptive-statistics" class="nav-link" data-scroll-target="#descriptive-statistics"><span class="header-section-number">3.2</span> Descriptive Statistics</a></li>
+  <li><a href="#ejection-fraction" id="toc-ejection-fraction" class="nav-link" data-scroll-target="#ejection-fraction"><span class="header-section-number">3.3</span> Ejection Fraction</a></li>
+  <li><a href="#serum-creatinine" id="toc-serum-creatinine" class="nav-link" data-scroll-target="#serum-creatinine"><span class="header-section-number">3.4</span> Serum Creatinine</a></li>
+  <li><a href="#follow-up-time" id="toc-follow-up-time" class="nav-link" data-scroll-target="#follow-up-time"><span class="header-section-number">3.5</span> Follow-Up Time</a></li>
+  <li><a href="#data-analysis" id="toc-data-analysis" class="nav-link" data-scroll-target="#data-analysis"><span class="header-section-number">3.6</span> Data Analysis</a></li>
+  <li><a href="#random-forest-w-all-quantiative-predictors" id="toc-random-forest-w-all-quantiative-predictors" class="nav-link" data-scroll-target="#random-forest-w-all-quantiative-predictors"><span class="header-section-number">3.7</span> Random Forest w/ all Quantiative Predictors</a></li>
+  <li><a href="#feature-importance" id="toc-feature-importance" class="nav-link" data-scroll-target="#feature-importance"><span class="header-section-number">3.8</span> Feature Importance</a></li>
+  <li><a href="#random-forest-classification-ejection-fraction-serum-creatinine" id="toc-random-forest-classification-ejection-fraction-serum-creatinine" class="nav-link" data-scroll-target="#random-forest-classification-ejection-fraction-serum-creatinine"><span class="header-section-number">3.9</span> Random Forest Classification: Ejection Fraction &amp; Serum Creatinine</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">4</span> Results</a></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">5</span> Discussion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">6</span> References</a></li>
+  <li><a href="#appendix-a" id="toc-appendix-a" class="nav-link" data-scroll-target="#appendix-a"><span class="header-section-number">7</span> Appendix A</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="711_reproduction_manuscript.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Predicting Survival of Patients with Heart Failure with Machine Learning Methods</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li></ul></div></div>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Sadaf Nasir </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            UW-Madison - Data Science in Human Behavior
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 27, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="abstract" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Abstract</h1>
+<p>This reproduction study investigates the use of random forest classification models to predict survival among patients with heart failure based on clinical indicators. This study reproduces the work published by Jia (2024). Two models were developed: one using only serum creatinine, ejection fraction, and follow-up time as predictors, and a second including all quantitative variables. The results showed that the model with the narrower set of predictors performed better, achieving an accuracy of 80%, compared to 75% for the model using all quantitative predictors. Feature importance analysis revealed that follow-up time was the most influential predictor, followed by serum creatinine and ejection fraction. These findings align with Jia (2024), where serum creatinine and ejection fraction were identified as key predictors of heart failure outcomes. However, the higher accuracy of the simpler model suggests that including additional predictors may introduce noise rather than improving predictive performance. This study highlights the potential of machine learning approaches, particularly random forests, in enhancing survival prediction and guiding clinical decision-making in heart failure management.</p>
+<div id="999e0643-46bd-434c-9a0b-59393e51b736" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsClassifier</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> StratifiedKFold, KFold</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'heart_failure_clinical_records_dataset.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="introduction" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Introduction</h1>
+<p>Approximately 6.7 million people in the United States, aged 20 years or older are diagnosed with heart failure, a condition that occurs when the heart is incapable of pumping adequate blood and oxygen to organs in the body (CDC, 2024). In 2022, heart failure was mentioned on nearly 500,000 death certificates and was responsible for 13.9% of causes of death, nationwide (CDC, 2024). This widespread effect of heart failure emphasizes the need for research in new technologies and/or interventions to minimize the impact of the disease.</p>
+<p>With the rise of machine learning, making accurate predictions rather than relying on explantory frameworks has received greater attention in recent years (Yarkoni &amp; Westfall, 2017). Scientists argue that good explanation begins with good prediction (Yarkoni &amp; Westfall, 2017). One practical application of this is in the work of Chicco &amp; Jurman, who use machine learning methods to predict the survival of patients with heart failure based on ejection fraction and serum creatinine with high accuracy (Chicco &amp; Jurman, 2020). This work was later reproduced and published by Jia (Jia, 2024). The current study seeks to reproduce parts of the results of Jia’s reproduction, specifically the random forest model. This project ensures the reliability and generalizability of the random forest model in predicting heart failure survival using serum creatinine and ejection fraction.</p>
+<section id="dataset" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="dataset"><span class="header-section-number">2.1</span> Dataset</h2>
+<p>The dataset for this study was obtained from the UC Irvine Machine Learning Repository, which is a widely used source for benchmarking machine learning models. The dataset includes clinical records of heart failure patients, with features such as age, serum creatinine, ejection fraction, serum sodium, platelet count, and creatine phosphokinase levels. These variables were selected based on their established relevance in heart failure prognosis (Chicco &amp; Jurman, 2020). Data preprocessing involved handling missing values, normalizing continuous variables, and splitting the dataset into training and testing subsets to evaluate model performance. By leveraging this dataset, the current study aims to assess the reproducibility of Jia’s findings and validate the predictive power of random forest classification in this context.</p>
+</section>
+</section>
+<section id="methods" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Methods</h1>
+<section id="participants" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="participants"><span class="header-section-number">3.1</span> Participants</h2>
+<p>299 patients in the Heart Failure Clinical Reocrds dataset were categorized into two groups: deceased patients (patients who did not survive) and survived patients (patients who were still alive at the end of the observation period). The dataset was summarized by computing mean, median, and standard deviation for the full sample, as well as for the deceased and survived patient groups separately. The summary statistics (see Table X) provide insights into the distribution of key clinical variables across survival outcomes.</p>
+</section>
+<section id="descriptive-statistics" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="descriptive-statistics"><span class="header-section-number">3.2</span> Descriptive Statistics</h2>
+<p>The average age of the full sample was 60.83 years, with deceased patients being older on average (65.22 years) compared to those who survived (58.76 years). The mean serum creatinine level was 1.39 mg/dL for the full sample, but significantly higher in deceased patients (1.84 mg/dL) than in survivors (1.18 mg/dL), indicating a potential link between renal function and mortality risk. The mean ejection fraction for the full sample was 38.08%, but lower among deceased patients (33.47%) compared to survivors (40.27%), suggesting that reduced ejection fraction is associated with increased mortality risk. Creatinine phosphokinase, an enzyme indicative of muscle damage, showed considerable variability with higher average values in deceased patients (670.20 U/L) compared to survivors (540.05 U/L). The mean serum sodium level was slightly lower in deceased patients (135.38 mmol/L) than in survivors (137.22 mmol/L). The recorded follow-up duration was notably shorter for deceased patients (70.88 days) compared to survivors (158.34 days), reflecting the difference in survival time between the two groups.</p>
+</section>
+<section id="ejection-fraction" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="ejection-fraction"><span class="header-section-number">3.3</span> Ejection Fraction</h2>
+<p>Ejection fraction in the context of the heart is a measure of the ratio of blood pumped out of the heart’s left ventricle at each contraction (Foley et al., 2012). Patients with reduced ejection fraction form a well-defined subset of cases, highlighting its central role in heart failure classification and prognosis (Iwano &amp; Little, 2013). Incorporating ejection fraction into machine learning models enhances predictive accuracy by allowing algorithms to capture these nuanced distinctions in patient outcomes.</p>
+<p>Ejection fraction is calculated by first measuring end-diastolic-volume (EDV), which is the amount of blood collected in the left ventricle just prior to contraction (Foley et al, 2012). Then another measurement of blood in the left ventricle is collected immediately after contraction, known as end-systolic-volume (ESV) (Foley et al., 2012). From this, a stroke volume (SV) is calculated by subtracting ESV from EDV, and then dividing by EDV (Foley at al., 2012). This results in a decimal, which can be multiplied by 100 to obtain an ejection fraction percentage.</p>
+<p><span class="math display">\[SV = EDV - ESV\]</span></p>
+<p><span class="math display">\[
+EF(\%) = \frac{SV}{EDV} \times 100
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><p>(EF) = <strong>ejection fraction</strong>: Proportion of blood pumped out of the left ventricle of the heart (%).</p></li>
+<li><p>(EDV) = <strong>end-diastolic volume</strong>: Amount of blood within the left ventricle prior to contraction (mL).</p></li>
+<li><p>(ESV) = <strong>end-systolic-volume</strong>: Amount of blood withiin the left ventricle immediately after contraction (mL).</p></li>
+<li><p>(SV) = <strong>stroke volume</strong>: Amount of blood pumped out of the left ventricle (mL).</p></li>
+</ul>
+</section>
+<section id="serum-creatinine" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="serum-creatinine"><span class="header-section-number">3.4</span> Serum Creatinine</h2>
+<p>Serum creatinine refers to the amount of creatinine in a patient’s blood, measured in milligrams per deciliter. Creatinine is a waste product that accumulates from muscle use and breakdown, and is then deposited into the bloodstream (Johns Hopkins Health Plans, 2022). From there, creatinine travels to the kidneys via the bloodstream, where healthy kidneys would filter and dispose of the creatinine build-up, circulating waste-free blood through to the rest of the body (Johns Hopkins Hleath Plans, 2022).</p>
+<p>Patients with heart failure often have elevated serum creatinine levels (Shlipak et al., 2003). Research has shown that heart failure patients with elevated serum creatinine levels tend to have poorer disease outcomes (Shlipak et al., 2022). Including serum creatinine in a machine learning model allows the model to capture the impact of kidney dysfunction on survival outcomes, improving predictive accuracy and clinical relevance.</p>
+</section>
+<section id="follow-up-time" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="follow-up-time"><span class="header-section-number">3.5</span> Follow-Up Time</h2>
+<p>Follow-up time was included as a predictor to account for the duration between a patient’s initial assessment and the recorded outcome. This variable provides important temporal context, capturing how survival likelihood may change over time. Data on follow-up time were extracted from patient records and measured in months. Given its potential influence on survival outcomes, follow-up time was considered alongside other clinical indicators in the model to assess its contribution to predictive accuracy.</p>
+<div id="a8fcdc3a-a86e-4b8b-986b-e12ab242ab2e" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df.columns <span class="op">=</span> df.columns.<span class="bu">str</span>.lower()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>quant_preds <span class="op">=</span> [<span class="st">'age'</span>, <span class="st">'creatinine_phosphokinase'</span>, <span class="st">'ejection_fraction'</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>               <span class="st">'platelets'</span>, <span class="st">'serum_creatinine'</span>, <span class="st">'serum_sodium'</span>, <span class="st">'time'</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>full_stats <span class="op">=</span> df[quant_preds].agg([<span class="st">'mean'</span>, <span class="st">'median'</span>, <span class="st">'std'</span>])</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>death_stats <span class="op">=</span> df[df[<span class="st">'death_event'</span>] <span class="op">==</span> <span class="dv">1</span>][quant_preds].agg([<span class="st">'mean'</span>, <span class="st">'median'</span>, <span class="st">'std'</span>])</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>survival_stats <span class="op">=</span> df[df[<span class="st">'death_event'</span>] <span class="op">==</span> <span class="dv">0</span>][quant_preds].agg([<span class="st">'mean'</span>, <span class="st">'median'</span>, <span class="st">'std'</span>])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>combined_stats <span class="op">=</span> pd.concat([full_stats, death_stats, survival_stats], </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                           keys<span class="op">=</span>[<span class="st">'Full Sample'</span>, <span class="st">'Deceased Patients'</span>, </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">'Survived Patients'</span>]).transpose()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 8%">
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">(‘Full Sample’, ‘mean’)</th>
+<th style="text-align: right;">(‘Full Sample’, ‘median’)</th>
+<th style="text-align: right;">(‘Full Sample’, ‘std’)</th>
+<th style="text-align: right;">(‘Deceased Patients’, ‘mean’)</th>
+<th style="text-align: right;">(‘Deceased Patients’, ‘median’)</th>
+<th style="text-align: right;">(‘Deceased Patients’, ‘std’)</th>
+<th style="text-align: right;">(‘Survived Patients’, ‘mean’)</th>
+<th style="text-align: right;">(‘Survived Patients’, ‘median’)</th>
+<th style="text-align: right;">(‘Survived Patients’, ‘std’)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">60.8339</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">11.8948</td>
+<td style="text-align: right;">65.2153</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">13.2146</td>
+<td style="text-align: right;">58.7619</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">10.6379</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">creatinine_phosphokinase</td>
+<td style="text-align: right;">581.839</td>
+<td style="text-align: right;">250</td>
+<td style="text-align: right;">970.288</td>
+<td style="text-align: right;">670.198</td>
+<td style="text-align: right;">259</td>
+<td style="text-align: right;">1316.58</td>
+<td style="text-align: right;">540.054</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">753.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ejection_fraction</td>
+<td style="text-align: right;">38.0836</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">11.8348</td>
+<td style="text-align: right;">33.4688</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">12.5253</td>
+<td style="text-align: right;">40.266</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">10.86</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">platelets</td>
+<td style="text-align: right;">263358</td>
+<td style="text-align: right;">262000</td>
+<td style="text-align: right;">97804.2</td>
+<td style="text-align: right;">256381</td>
+<td style="text-align: right;">258500</td>
+<td style="text-align: right;">98525.7</td>
+<td style="text-align: right;">266657</td>
+<td style="text-align: right;">263000</td>
+<td style="text-align: right;">97531.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">serum_creatinine</td>
+<td style="text-align: right;">1.39388</td>
+<td style="text-align: right;">1.1</td>
+<td style="text-align: right;">1.03451</td>
+<td style="text-align: right;">1.83583</td>
+<td style="text-align: right;">1.3</td>
+<td style="text-align: right;">1.46856</td>
+<td style="text-align: right;">1.18488</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.654083</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">serum_sodium</td>
+<td style="text-align: right;">136.625</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">4.41248</td>
+<td style="text-align: right;">135.375</td>
+<td style="text-align: right;">135.5</td>
+<td style="text-align: right;">5.00158</td>
+<td style="text-align: right;">137.217</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">3.98292</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">time</td>
+<td style="text-align: right;">130.261</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">77.6142</td>
+<td style="text-align: right;">70.8854</td>
+<td style="text-align: right;">44.5</td>
+<td style="text-align: right;">62.3783</td>
+<td style="text-align: right;">158.34</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">67.7429</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data-analysis" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="data-analysis"><span class="header-section-number">3.6</span> Data Analysis</h2>
+<p>To better understand the patterns above and make accurate predictions, this study reproduced a random forest classification model. This method was chosen due to its ability to handle nonlinear relationships, account for interactions among variables, and provide insights into feature importance. The following section details the setup and evaluation of the random forest models.</p>
+<p>Random forest is an ensemble machine learning algorithm that builds multiple decision trees and combines their outputs to improve predictive accuracy and reduce overfitting. Each tree is trained on a random subset of the data, and the final classification is determined by majority vote among the trees. Random forests can be an excellent way to explore nonlinear patterns in complex datasets. In this study, a random forest classifier was implemented to predict patient survival based on key clinical indicators, including serum creatinine and ejection fraction. Two models were run in this reproduction. First, a random forest classifier was set up using only serum creatinine and ejection fraction as predictors of a death event. A second model was run using all quantitative variables as predictors in the model.</p>
+</section>
+<section id="random-forest-w-all-quantiative-predictors" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="random-forest-w-all-quantiative-predictors"><span class="header-section-number">3.7</span> Random Forest w/ all Quantiative Predictors</h2>
+<p>The first random forest model run in this study was set up with all quantitative predictors. Quantitative predictors were isolated and transformed using the StandardScaler from scikit-learn. The features were standardized using the StandardScaler from scikit-learn, ensuring that they were on the same scale. Scaling features improves the performance of many machine learning algorithms, producing more stable results. The data were then split into training and testing sets, with 30% of the data allocated to the test set using the train_test_split function. This split helps evaluate the model’s generalizability to unseen data. The random forest classifier was instantiated and trained on the training data with a random state of 42 for consistency. Finaly predictions were made and compared to the test set to assess the model’s performance in a new dataset.</p>
+<div id="fda89494-bcfd-4305-b42a-08b377295ba5" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>the_scaler <span class="op">=</span> StandardScaler().set_output(transform<span class="op">=</span><span class="st">"pandas"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> the_scaler.fit_transform(df[quant_preds])</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">'death_event'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="f49015ef-a3d0-4a5f-b2cc-a8fe8b06a7ad" class="cell" data-execution_count="10">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>     X, y, test_size<span class="op">=</span><span class="fl">0.33</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="63f7c5a3-1ff3-4020-b46c-f4b9be3b8ca6" class="cell" data-execution_count="11">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>the_rf2 <span class="op">=</span> RandomForestClassifier()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>the_rf2.fit(X_train, y_train)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> the_rf2.predict(X_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="d0162e1b-c23b-4229-b582-fa7e12a4d6da" class="cell" data-execution_count="12">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(y_test <span class="op">==</span> preds).mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>0.7373737373737373</code></pre>
+</div>
+</div>
+</section>
+<section id="feature-importance" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="feature-importance"><span class="header-section-number">3.8</span> Feature Importance</h2>
+<p>Feature importances were extracted from the random forest model containing all quantitative predictors using the .feature_importances function. This give a measure of the weight each predictor in the model’s predictions. Feature importances can also be respresented visually to demonstrate the each predictor’s impact on the model.</p>
+<div id="f3cd5f23-a883-485a-97b1-a3363680f0a4" class="cell" data-execution_count="14">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>the_rf2.feature_importances_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>array([0.07752675, 0.08894009, 0.11025899, 0.0805131 , 0.16083354,
+       0.07263075, 0.40929678])</code></pre>
+</div>
+</div>
+<div id="4897c614-c114-4c16-9eb4-c7f423e5fedb" class="cell" data-execution_count="15">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>viz_fi <span class="op">=</span> pd.DataFrame({<span class="st">'features'</span>: X.columns, <span class="st">'importance'</span>: the_rf2.feature_importances_})</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>viz_fi.style.hide()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<style type="text/css">
+</style>
+
+<table id="T_acdfe" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th id="T_acdfe_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">features</th>
+<th id="T_acdfe_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">importance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_acdfe_row0_col0" class="data row0 col0">age</td>
+<td id="T_acdfe_row0_col1" class="data row0 col1">0.077527</td>
+</tr>
+<tr class="even">
+<td id="T_acdfe_row1_col0" class="data row1 col0">creatinine_phosphokinase</td>
+<td id="T_acdfe_row1_col1" class="data row1 col1">0.088940</td>
+</tr>
+<tr class="odd">
+<td id="T_acdfe_row2_col0" class="data row2 col0">ejection_fraction</td>
+<td id="T_acdfe_row2_col1" class="data row2 col1">0.110259</td>
+</tr>
+<tr class="even">
+<td id="T_acdfe_row3_col0" class="data row3 col0">platelets</td>
+<td id="T_acdfe_row3_col1" class="data row3 col1">0.080513</td>
+</tr>
+<tr class="odd">
+<td id="T_acdfe_row4_col0" class="data row4 col0">serum_creatinine</td>
+<td id="T_acdfe_row4_col1" class="data row4 col1">0.160834</td>
+</tr>
+<tr class="even">
+<td id="T_acdfe_row5_col0" class="data row5 col0">serum_sodium</td>
+<td id="T_acdfe_row5_col1" class="data row5 col1">0.072631</td>
+</tr>
+<tr class="odd">
+<td id="T_acdfe_row6_col0" class="data row6 col0">time</td>
+<td id="T_acdfe_row6_col1" class="data row6 col1">0.409297</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="ac21f762-efc6-4676-8171-1fc9e9a19bad" class="cell" data-execution_count="16">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>sns.barplot(viz_fi, x <span class="op">=</span> <span class="st">'importance'</span>, y <span class="op">=</span> <span class="st">'features'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="711_reproduction_manuscript_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="random-forest-classification-ejection-fraction-serum-creatinine" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="random-forest-classification-ejection-fraction-serum-creatinine"><span class="header-section-number">3.9</span> Random Forest Classification: Ejection Fraction &amp; Serum Creatinine</h2>
+<p>In this second analysis, primary features from the first random forest model were first isolated based on the feature importance results from above: serum creatinine, ejection fraction, and follow-up time. All three feautres were isolated and transformed using the StandardScaler from scikit-learn. The transformed data was then split into training and testing sets, with the same 70/30 split used in the previous model. A random rorest classifier was instantiated and trained on the training data and a random state of 42 was set. After fitting the model, predictions were made on the test set using the predict method. These predictions were then compared against the actual test set values to assess the model’s performance.</p>
+<div id="73f17148-d0e1-41d8-b95b-c0275023a191" class="cell" data-execution_count="18">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>primary_features <span class="op">=</span> [<span class="st">'serum_creatinine'</span>, <span class="st">'ejection_fraction'</span>, <span class="st">'time'</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>the_scaler <span class="op">=</span> StandardScaler().set_output(transform<span class="op">=</span><span class="st">"pandas"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> the_scaler.fit_transform(df[primary_features])</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">'death_event'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="1a4f1e09-1993-48a9-a956-e9153b1fbb1d" class="cell" data-execution_count="19">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>     X, y, test_size<span class="op">=</span><span class="fl">0.33</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="e376594f-04ef-4f82-b70c-ad6b62fe0b59" class="cell" data-execution_count="20">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>the_rf1 <span class="op">=</span> RandomForestClassifier()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>the_rf1.fit(X_train, y_train)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>preds <span class="op">=</span> the_rf1.predict(X_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="eca02b87-9e79-46ae-9307-814a4db1faf0" class="cell" data-execution_count="21">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(y_test <span class="op">==</span> preds).mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>0.797979797979798</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="results" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Results</h1>
+<p>In this study, two random forest models were trained to predict patient survival based on clinical indicators. The first model, which included all quantitative variables, showed an accuracy of 74%, which is similar to the results reported by Jia (2024), which were accuracy rates of 69% and 78% in their stratified k-fold and k-fold models, respectively. The second model used only ejection fraction and serum creatinine as predictors, achieving an accuracy of 80%%. This result is higher than those report by Jia (2024), which were 65% and and 78% for their stratified k-fold model and k-fold model, respectively. These findings suggest that a simplified model with just ejection fraction and serum creatinine may offer improved predictive performance for patient survival compared to models using a broader set of clinical indicators.</p>
+<p>The feature importance analysis revealed that the most influential predictors in the model were follow-up time (0.41), serum creatinine (0.16), and ejection fraction (0.11). Serum creatinine and ejection fraction were notably higher in importance compared to other features, aligning with their established clinical relevance in predicting heart failure outcomes. Follow-up time was the most important predictor, with an importance score of 0.41, reflecting its central role in tracking patient condition over time. Follow-up time is a feature that was not included in Jia’s feature importance, interestingly. Other clinical measures, such as age, creatinine phosphokinase, and serum sodium, contributed to the model but with lower importance scores.</p>
+<p>Comparing these results to Jia’s (2024) study, which also utilized random forest models to predict heart failure survival, findings od this study are mostly consistent with Jia’s, where serum creatinine and ejection fraction were found to be significant predictors of survival. Jia’s model reported similar trends in feature importance, particularly highlighting serum creatinine and ejection fraction as key contributors. However, Jia (2024) included a model with thre three mos important features, but did not contain one of those features (follow-up time) in their feature importance. The higher accuracy of the model with fewer features highlights the potential benefits of a more streamlined feature set. Additionally, this finding might suggest simplifying the data collection process, indicating that collecting fewer, more important features has the potential to produce more accurate prediction regarding survival rates in patients with hear failure.</p>
+<p>These results highlight the effectiveness of machine learning, particularly random forests, in improving survival predictions for heart failure patients, with both models outperforming the original study’s stratified k-fold results.</p>
+</section>
+<section id="discussion" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Discussion</h1>
+<p>This study demonstrates the effectiveness of random forest models in predicting patient survival in the context of heart failure. By comparing two models—one incorpoating all quantiative predictors as features, and the other using only serum creatinine, ejection fraction, and follow-up time—we observed a significant improvement in accuracy from 74% to 80% with the inclusion of fewer, more important predictors. The feature importance analysis revealed that serum creatinine and ejection fraction were the most influential predictors, consistent with Jia’s (2024) study. These findings suggest that a more streamlined model focusing on the most relevant clinical indicators can improve predictive accuracy while reducing complexity. Future work should explore whether additional simplifications or alternative feature selection methods can further enhance the performance of survival prediction models in heart failure cases.</p>
+</section>
+<section id="references" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> References</h1>
+<p>Centers for Disease Control and Prevention. (2024, May 15). About heart failure. <em>Centers for Disease Control and Prevention</em>. [https://www.cdc.gov/heart-disease/about/heart-failure.html]</p>
+<p>Chicco, D., &amp; Jurman, G. (2020). Machine learning can predict survival of patients with heart failure from serum creatinine and ejection fraction alone. <em>BMC Medical Informatics and Decision Making</em>, <em>20</em>. [https://doi.org/10.1186/s12911-020-1023-5]</p>
+<p>Johns Hopkins Health Plans. <em>Creatinine (Blood)</em>. <em>Johns Hopkins HealthCare</em>. (2022, September 1). [https://johnshopkinshealthcare.staywellsolutionsonline.com/HeartHealth/167,creatinine_serum]</p>
+<p>Foley, T.A., Mankad, S.V., Anavekar, N.S., Bonnichsen, C.R., Morris, M.F., Miller, T.D., &amp; Araoz, P.A. (2012). Measuring Left Ventricular Ejection Fraction - Techniques and Potential Pitfalls. <em>European Cardiology Review</em>, <em>8</em>, 108-114. [https://doi.org/10.15420/ecr.2012.8.2.108]</p>
+<p>Iwano, H., &amp; Little, W. C. (2013). Heart failure: What does ejection fraction have to do with it? <em>Journal of Cardiology</em>, <em>62(1)</em>, 1-3. [https://doi.org/10.1016/j.jjcc.2013.02.017]</p>
+<p>Jia, L. (2024). Machine Learning and Statistical Methods for Predicting Survival of Patients with Heart Failure. <em>Highlights in Science, Engineering and Technology</em>, <em>92</em>, 369-375. [https://doi.org/10.54097/ay420g44]</p>
+<p>Shlipak, M. G., Chertow, G.C., Massie, B.M. (2003). Beware the rising creatinine level. Journal of Cardiac Failure, 9(1), 26-28. https://doi.org/10.1054/jcaf.2003.7</p>
+<p>Yarkoni, T., &amp; Westfall, J. (2017). Choosing Prediction Over Explanation in Psychology: Lessons From Machine Learning. <em>Perspectives on psychological science : a journal of the Association for Psychological Science</em>, <em>12(6)</em>, 1100–1122. [https://doi.org/10.1177/1745691617693393]</p>
+</section>
+<section id="appendix-a" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Appendix A</h1>
+<p>Below is a data dictionary containing all variables contained in Heart Failure Clinical Records Dataset, their descriptions, units or measurements, and ranges.</p>
+<div id="6ad8f2aa-62b2-4c2d-9758-44700dd4e7be" class="cell" data-execution_count="26">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data_dict <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Feature"</span>: [</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Age"</span>, <span class="st">"Anaemia"</span>, <span class="st">"High blood pressure"</span>, <span class="st">"Creatinine phosphokinase (CPK)"</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Diabetes"</span>, <span class="st">"Ejection fraction"</span>, <span class="st">"Sex"</span>, <span class="st">"Platelets"</span>, <span class="st">"Serum creatinine"</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Serum sodium"</span>, <span class="st">"Smoking"</span>, <span class="st">"Time"</span>, <span class="st">"Death event"</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Explanation"</span>: [</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Age of the patient"</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Decrease of red blood cells or hemoglobin"</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"If a patient has hypertension"</span>,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Level of the CPK enzyme in the blood"</span>,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"If the patient has diabetes"</span>,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Percentage of blood leaving the heart at each contraction"</span>,</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Woman or man"</span>,</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Platelets in the blood"</span>,</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Level of creatinine in the blood"</span>,</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Level of sodium in the blood"</span>,</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"If the patient smokes"</span>,</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Follow-up period"</span>,</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"If the patient died during the follow-up period"</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Measurement"</span>: [</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Years"</span>, <span class="st">"Boolean"</span>, <span class="st">"Boolean"</span>, <span class="st">"mcg/L"</span>, <span class="st">"Boolean"</span>, <span class="st">"Percentage"</span>, <span class="st">"Binary"</span>,</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"kiloplatelets/mL"</span>, <span class="st">"mg/dL"</span>, <span class="st">"mEq/L"</span>, <span class="st">"Boolean"</span>, <span class="st">"Days"</span>, <span class="st">"Boolean"</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Range"</span>: [</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">"[40, ..., 95]"</span>, <span class="st">"0, 1"</span>, <span class="st">"0, 1"</span>, <span class="st">"[23, ..., 7861]"</span>, <span class="st">"0, 1"</span>, <span class="st">"[14, ..., 80]"</span>,</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"0, 1"</span>,</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">"[25.01, ..., 850.00]"</span>, <span class="st">"[0.50, ..., 9.40]"</span>, <span class="st">"[114, ..., 148]"</span>, <span class="st">"0, 1"</span>,</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">"[4, ..., 285]"</span>, <span class="st">"0, 1"</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>data_dict.style.hide()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<style type="text/css">
+</style>
+
+<table id="T_a9949" class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th id="T_a9949_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Feature</th>
+<th id="T_a9949_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Explanation</th>
+<th id="T_a9949_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Measurement</th>
+<th id="T_a9949_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Range</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_a9949_row0_col0" class="data row0 col0">Age</td>
+<td id="T_a9949_row0_col1" class="data row0 col1">Age of the patient</td>
+<td id="T_a9949_row0_col2" class="data row0 col2">Years</td>
+<td id="T_a9949_row0_col3" class="data row0 col3">[40, ..., 95]</td>
+</tr>
+<tr class="even">
+<td id="T_a9949_row1_col0" class="data row1 col0">Anaemia</td>
+<td id="T_a9949_row1_col1" class="data row1 col1">Decrease of red blood cells or hemoglobin</td>
+<td id="T_a9949_row1_col2" class="data row1 col2">Boolean</td>
+<td id="T_a9949_row1_col3" class="data row1 col3">0, 1</td>
+</tr>
+<tr class="odd">
+<td id="T_a9949_row2_col0" class="data row2 col0">High blood pressure</td>
+<td id="T_a9949_row2_col1" class="data row2 col1">If a patient has hypertension</td>
+<td id="T_a9949_row2_col2" class="data row2 col2">Boolean</td>
+<td id="T_a9949_row2_col3" class="data row2 col3">0, 1</td>
+</tr>
+<tr class="even">
+<td id="T_a9949_row3_col0" class="data row3 col0">Creatinine phosphokinase (CPK)</td>
+<td id="T_a9949_row3_col1" class="data row3 col1">Level of the CPK enzyme in the blood</td>
+<td id="T_a9949_row3_col2" class="data row3 col2">mcg/L</td>
+<td id="T_a9949_row3_col3" class="data row3 col3">[23, ..., 7861]</td>
+</tr>
+<tr class="odd">
+<td id="T_a9949_row4_col0" class="data row4 col0">Diabetes</td>
+<td id="T_a9949_row4_col1" class="data row4 col1">If the patient has diabetes</td>
+<td id="T_a9949_row4_col2" class="data row4 col2">Boolean</td>
+<td id="T_a9949_row4_col3" class="data row4 col3">0, 1</td>
+</tr>
+<tr class="even">
+<td id="T_a9949_row5_col0" class="data row5 col0">Ejection fraction</td>
+<td id="T_a9949_row5_col1" class="data row5 col1">Percentage of blood leaving the heart at each contraction</td>
+<td id="T_a9949_row5_col2" class="data row5 col2">Percentage</td>
+<td id="T_a9949_row5_col3" class="data row5 col3">[14, ..., 80]</td>
+</tr>
+<tr class="odd">
+<td id="T_a9949_row6_col0" class="data row6 col0">Sex</td>
+<td id="T_a9949_row6_col1" class="data row6 col1">Woman or man</td>
+<td id="T_a9949_row6_col2" class="data row6 col2">Binary</td>
+<td id="T_a9949_row6_col3" class="data row6 col3">0, 1</td>
+</tr>
+<tr class="even">
+<td id="T_a9949_row7_col0" class="data row7 col0">Platelets</td>
+<td id="T_a9949_row7_col1" class="data row7 col1">Platelets in the blood</td>
+<td id="T_a9949_row7_col2" class="data row7 col2">kiloplatelets/mL</td>
+<td id="T_a9949_row7_col3" class="data row7 col3">[25.01, ..., 850.00]</td>
+</tr>
+<tr class="odd">
+<td id="T_a9949_row8_col0" class="data row8 col0">Serum creatinine</td>
+<td id="T_a9949_row8_col1" class="data row8 col1">Level of creatinine in the blood</td>
+<td id="T_a9949_row8_col2" class="data row8 col2">mg/dL</td>
+<td id="T_a9949_row8_col3" class="data row8 col3">[0.50, ..., 9.40]</td>
+</tr>
+<tr class="even">
+<td id="T_a9949_row9_col0" class="data row9 col0">Serum sodium</td>
+<td id="T_a9949_row9_col1" class="data row9 col1">Level of sodium in the blood</td>
+<td id="T_a9949_row9_col2" class="data row9 col2">mEq/L</td>
+<td id="T_a9949_row9_col3" class="data row9 col3">[114, ..., 148]</td>
+</tr>
+<tr class="odd">
+<td id="T_a9949_row10_col0" class="data row10 col0">Smoking</td>
+<td id="T_a9949_row10_col1" class="data row10 col1">If the patient smokes</td>
+<td id="T_a9949_row10_col2" class="data row10 col2">Boolean</td>
+<td id="T_a9949_row10_col3" class="data row10 col3">0, 1</td>
+</tr>
+<tr class="even">
+<td id="T_a9949_row11_col0" class="data row11 col0">Time</td>
+<td id="T_a9949_row11_col1" class="data row11 col1">Follow-up period</td>
+<td id="T_a9949_row11_col2" class="data row11 col2">Days</td>
+<td id="T_a9949_row11_col3" class="data row11 col3">[4, ..., 285]</td>
+</tr>
+<tr class="odd">
+<td id="T_a9949_row12_col0" class="data row12 col0">Death event</td>
+<td id="T_a9949_row12_col1" class="data row12 col1">If the patient died during the follow-up period</td>
+<td id="T_a9949_row12_col2" class="data row12 col2">Boolean</td>
+<td id="T_a9949_row12_col3" class="data row12 col3">0, 1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
